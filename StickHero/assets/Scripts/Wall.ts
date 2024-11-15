@@ -6,4 +6,8 @@ export class Wall extends Component {
     initPos() {
        this.node.setPosition(0, -400);
    }
+
+   startPlayPose() {
+       this.node.setPosition(-300, -400);
+   }
 }
