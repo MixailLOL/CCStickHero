@@ -1,10 +1,10 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab } from 'cc';
 
 const { ccclass, property } = _decorator;
 
 import { Player } from './Player';
-import { Wall } from './Wall';
 import { UserInt } from './UserInt';
+
 
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
@@ -18,10 +18,10 @@ export class GameCtrl extends Component {
     public player: Player;
 
     @property({
-        type: Wall,
-        tooltip: "Add Wall node",
+        type: Prefab,
+        tooltip: "Add Wall prefab",
     })
-    public wall: Wall;
+    public wall: prefab;
 
     @property({
         type: UserInt,
@@ -32,17 +32,25 @@ export class GameCtrl extends Component {
     onLoad(){
         this.StateStart();
         this.isOver = true;
-
         this.userInt.btnStart.node.on('click', () => {
             this.player.startPlayPose();
             this.wall.startPlayPose();
             this.userInt.startPlayPose();  
+            this.createWall();
         })
     }
 
+    createWall(){
+        
+    }
+
     StateStart() {
-        this.player.initPos();
-        this.wall.initPos();
+
+        let wall = cc.instantiate(this.wall);
+        wall.parent = this.node.parent;
+        //console.log(wall.children[0]);
+        //console.log(wall);
+        this.player.initPos();;
         this.userInt.initPos();
     }
 

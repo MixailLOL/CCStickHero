@@ -8,7 +8,7 @@ export class Player extends Component {
    }
 
    startPlayPose() {
-       this.node.setPosition(-300, 0);
+       this.node.setPosition(-290, 0);
    }
 }
 
