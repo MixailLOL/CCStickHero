@@ -1,15 +1,18 @@
-import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab } from 'cc';
+import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input } from 'cc';
 
 const { ccclass, property } = _decorator;
 
 import { Player } from './Player';
 import { UserInt } from './UserInt';
+import { Wall } from './Wall';
 
 
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
 
-    public isOver: boolean;
+    public isOver = true;
+    public isPressed = false;
+    public wallInst: Node;
 
     @property({
         type: Player,
@@ -21,7 +24,7 @@ export class GameCtrl extends Component {
         type: Prefab,
         tooltip: "Add Wall prefab",
     })
-    public wall: prefab;
+    public wallPref: prefab;
 
     @property({
         type: UserInt,
@@ -30,28 +33,45 @@ export class GameCtrl extends Component {
     public userInt: UserInt;
 
     onLoad(){
-        this.StateStart();
-        this.isOver = true;
+        this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
+            this.isOver = false;
             this.player.startPlayPose();
-            this.wall.startPlayPose();
             this.userInt.startPlayPose();  
-            this.createWall();
         })
+        input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
+        input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
     }
 
-    createWall(){
-        
-    }
 
-    StateStart() {
+    StateInit() {
+        //this.wallInst = cc.instantiate(this.wallPref);
+        //this.wallInst.parent = this.node.parent;
 
-        let wall = cc.instantiate(this.wall);
-        wall.parent = this.node.parent;
-        //console.log(wall.children[0]);
-        //console.log(wall);
         this.player.initPos();;
         this.userInt.initPos();
+    }
+
+    onTouchStart(event: EventTouch) {
+        if(!this.isOver){
+            this.isPressed = true;
+            console.log("Presssed start");
+            console.log(this.isPressed);
+        }
+    }
+
+    onTouchEnd(event: EventTouch) {
+        if(!this.isOver){
+            this.isPressed = false;
+            console.log("Presssed end");
+            console.log(this.isPressed);
+        }
+    }
+
+    update (deltaTime: number) {
+        if(this.isPressed == true){
+            console.log(this.isPressed);
+        }
     }
 
 }
