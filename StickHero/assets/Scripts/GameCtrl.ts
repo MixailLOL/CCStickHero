@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input } from 'cc';
+import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -12,7 +12,7 @@ export class GameCtrl extends Component {
 
     public isOver = true;
     public isPressed = false;
-    public wallInst: Node;
+    public bridgeInst: Node;
 
     @property({
         type: Player,
@@ -55,22 +55,34 @@ export class GameCtrl extends Component {
     onTouchStart(event: EventTouch) {
         if(!this.isOver){
             this.isPressed = true;
-            console.log("Presssed start");
-            console.log(this.isPressed);
+            this.bridgeInst = cc.instantiate(this.wallPref);
+            this.bridgeInst.parent = this.node.parent;
+            this.bridgeInst.setScale(0.01, 0, 1);
+            let playerPos = this.player.node.getPosition();
+            let playerWidth = this.player.node.width;
+            let playerHeight = this.player.node.height;
+            let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x + this.bridgeInst.getComponent(UITransform).width/2*this.bridgeInst.scale.x;
+            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y - this.bridgeInst.getComponent(UITransform).height/2*this.bridgeInst.scale.y;
+            this.bridgeInst.setPosition(bridgeInstX, bridgeInstY, playerPos.z);
+            this.bridgeInst.anchorX = 0;
+            this.bridgeInst.anchorY = 0;
+            console.log(this.bridgeInst);
+            
         }
     }
 
     onTouchEnd(event: EventTouch) {
         if(!this.isOver){
             this.isPressed = false;
-            console.log("Presssed end");
-            console.log(this.isPressed);
+            this.bridgeInst.destroy();
         }
     }
 
     update (deltaTime: number) {
         if(this.isPressed == true){
-            console.log(this.isPressed);
+            console.log();
+            let bridgeScale = this.bridgeInst.getScale();
+            this.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01, bridgeScale.z);
         }
     }
 
