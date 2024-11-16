@@ -5,6 +5,7 @@ const { ccclass, property } = _decorator;
 export class Wall extends Component {
     initPos() {
        this.node.setPosition(0, -400);
+       this.node.setScale(0.1,0.1,1);
    }
 
    startPlayPose() {

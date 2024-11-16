@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform } from 'cc';
+import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -13,6 +13,8 @@ export class GameCtrl extends Component {
     public isOver = true;
     public isPressed = false;
     public bridgeInst: Node;
+    public initWallInst: Node;
+    public isRotated = true;
 
     @property({
         type: Player,
@@ -35,6 +37,7 @@ export class GameCtrl extends Component {
     onLoad(){
         this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
+            this.initWallInst.setPosition(-300,-400,0);
             this.isOver = false;
             this.player.startPlayPose();
             this.userInt.startPlayPose();  
@@ -45,8 +48,10 @@ export class GameCtrl extends Component {
 
 
     StateInit() {
-        //this.wallInst = cc.instantiate(this.wallPref);
-        //this.wallInst.parent = this.node.parent;
+        this.initWallInst = cc.instantiate(this.wallPref);
+        this.initWallInst.parent = this.node.parent;
+        this.initWallInst.setPosition(0,-400,0);
+        this.initWallInst.setScale(0.3,0.3,0);
 
         this.player.initPos();;
         this.userInt.initPos();
@@ -58,14 +63,14 @@ export class GameCtrl extends Component {
             this.bridgeInst = cc.instantiate(this.wallPref);
             this.bridgeInst.parent = this.node.parent;
             this.bridgeInst.setScale(0.01, 0, 1);
+            this.bridgeInst.anchorX = 0;
+            this.bridgeInst.anchorY = 0;
             let playerPos = this.player.node.getPosition();
             let playerWidth = this.player.node.width;
             let playerHeight = this.player.node.height;
-            let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x + this.bridgeInst.getComponent(UITransform).width/2*this.bridgeInst.scale.x;
-            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y - this.bridgeInst.getComponent(UITransform).height/2*this.bridgeInst.scale.y;
+            let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x;
+            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y;
             this.bridgeInst.setPosition(bridgeInstX, bridgeInstY, playerPos.z);
-            this.bridgeInst.anchorX = 0;
-            this.bridgeInst.anchorY = 0;
             console.log(this.bridgeInst);
             
         }
@@ -74,15 +79,20 @@ export class GameCtrl extends Component {
     onTouchEnd(event: EventTouch) {
         if(!this.isOver){
             this.isPressed = false;
-            this.bridgeInst.destroy();
+            this.isRotated = false;
         }
     }
 
     update (deltaTime: number) {
         if(this.isPressed == true){
-            console.log();
             let bridgeScale = this.bridgeInst.getScale();
             this.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01, bridgeScale.z);
+        }
+        if(!this.isRotated){
+            this.bridgeInst.angle -= 5;
+            if(this.bridgeInst.angle == -90){
+                this.isRotated = true;
+            }
         }
     }
 
