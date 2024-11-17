@@ -6,6 +6,9 @@ import { Player } from './Player';
 import { UserInt } from './UserInt';
 import { Wall } from './Wall';
 
+window.onresize = ()=>{
+    console.log(`resize : ${window.innerWidth} , ${window.innerHeight}`);
+}
 
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
@@ -50,8 +53,15 @@ export class GameCtrl extends Component {
     StateInit() {
         this.initWallInst = cc.instantiate(this.wallPref);
         this.initWallInst.parent = this.node.parent;
-        this.initWallInst.setPosition(0,-400,0);
-        this.initWallInst.setScale(0.3,0.3,0);
+
+
+        let wallWAdoptivWidthScale = (window.innerWidth)/(this.initWallInst.width*4);
+        let wallWAdoptivHeightScale = (window.innerHeight)/(this.initWallInst.height*4);
+        this.initWallInst.setScale(wallWAdoptivWidthScale,wallWAdoptivHeightScale,0);
+
+        console.log(window.innerHeight,this.initWallInst.height*wallWAdoptivHeightScale, -window.innerHeight*0.5-this.initWallInst.height*wallWAdoptivHeightScale)
+        this.initWallInst.setPosition(0,-window.innerHeight*0.5*0.8-this.initWallInst.height*wallWAdoptivHeightScale,0);
+
 
         this.player.initPos();;
         this.userInt.initPos();
@@ -63,8 +73,8 @@ export class GameCtrl extends Component {
             this.bridgeInst = cc.instantiate(this.wallPref);
             this.bridgeInst.parent = this.node.parent;
             this.bridgeInst.setScale(0.01, 0, 1);
-            this.bridgeInst.anchorX = 0;
-            this.bridgeInst.anchorY = 0;
+            //this.bridgeInst.anchorX = 0;
+            //this.bridgeInst.anchorY = 0;
             let playerPos = this.player.node.getPosition();
             let playerWidth = this.player.node.width;
             let playerHeight = this.player.node.height;
@@ -90,7 +100,7 @@ export class GameCtrl extends Component {
         }
         if(!this.isRotated){
             this.bridgeInst.angle -= 5;
-            if(this.bridgeInst.angle == -90){
+            if(this.bridgeInst.angle <= -90){
                 this.isRotated = true;
             }
         }
