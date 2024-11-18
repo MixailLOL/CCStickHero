@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math } from 'cc';
+import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math, Vec2, RigidBody2D, view } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -6,18 +6,14 @@ import { Player } from './Player';
 import { UserInt } from './UserInt';
 import { Wall } from './Wall';
 
-window.onresize = ()=>{
-    console.log(`resize : ${window.innerWidth} , ${window.innerHeight}`);
-}
-
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
-
     public isOver = true;
     public isPressed = false;
     public bridgeInst: Node;
     public initWallInst: Node;
     public isRotated = true;
+    public wallToPlayPos = false;
 
     @property({
         type: Player,
@@ -38,11 +34,12 @@ export class GameCtrl extends Component {
     public userInt: UserInt;
 
     onLoad(){
+        console.log(view.getCanvasSize())
         this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
-            this.initWallInst.setPosition(-300,-400,0);
+            this.wallToPlayPos = true;
             this.isOver = false;
-            this.player.startPlayPose();
+            //this.player.startPlayPose();
             this.userInt.startPlayPose();  
         })
         input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
@@ -53,16 +50,11 @@ export class GameCtrl extends Component {
     StateInit() {
         this.initWallInst = cc.instantiate(this.wallPref);
         this.initWallInst.parent = this.node.parent;
-
-
-        let wallWAdoptivWidthScale = (window.innerWidth)/(this.initWallInst.width*4);
-        let wallWAdoptivHeightScale = (window.innerHeight)/(this.initWallInst.height*4);
+        let wallWAdoptivWidthScale = (view.getCanvasSize().width)/(this.initWallInst.width*3);
+        let wallWAdoptivHeightScale = (view.getCanvasSize().height)/(this.initWallInst.height*5);
         this.initWallInst.setScale(wallWAdoptivWidthScale,wallWAdoptivHeightScale,0);
-
-        console.log(window.innerHeight,this.initWallInst.height*wallWAdoptivHeightScale, -window.innerHeight*0.5-this.initWallInst.height*wallWAdoptivHeightScale)
-        this.initWallInst.setPosition(0,-window.innerHeight*0.5*0.8-this.initWallInst.height*wallWAdoptivHeightScale,0);
-
-
+        this.initWallInst.setPosition(0,-view.getCanvasSize().height/2-this.initWallInst.height*wallWAdoptivHeightScale/2);
+        console.log(this.initWallInst.getPosition(), view.getCanvasSize())
         this.player.initPos();;
         this.userInt.initPos();
     }
@@ -73,8 +65,6 @@ export class GameCtrl extends Component {
             this.bridgeInst = cc.instantiate(this.wallPref);
             this.bridgeInst.parent = this.node.parent;
             this.bridgeInst.setScale(0.01, 0, 1);
-            //this.bridgeInst.anchorX = 0;
-            //this.bridgeInst.anchorY = 0;
             let playerPos = this.player.node.getPosition();
             let playerWidth = this.player.node.width;
             let playerHeight = this.player.node.height;
@@ -103,6 +93,29 @@ export class GameCtrl extends Component {
             if(this.bridgeInst.angle <= -90){
                 this.isRotated = true;
             }
+        }
+        if(this.wallToPlayPos){
+            let rigidBody = this.initWallInst.getComponent(RigidBody2D);
+            console.log(this.initWallInst.getPosition()+ " h = "+ this.initWallInst.height*this.initWallInst.getScale().y+ ' H/2='+view.getCanvasSize().height/2+ ' summ ='+(-view.getCanvasSize().height/2 + (this.initWallInst.height*this.initWallInst.getScale().y)));
+            let positionX = -view.getCanvasSize().width/2 + (this.initWallInst.width*this.initWallInst.getScale().x)/2 ;
+            let positionY = -view.getCanvasSize().height/2 + (this.initWallInst.height*this.initWallInst.getScale().y)/2;
+            if(this.initWallInst.getPosition().x >= positionX ||  this.initWallInst.getPosition().y <= positionY){
+                if(this.initWallInst.getPosition().x >= positionX){
+                    rigidBody.linearVelocity = new Vec2(-1, rigidBody.linearVelocity.y);     
+                }else{
+                    rigidBody.linearVelocity = new Vec2(0, rigidBody.linearVelocity.y); 
+                }
+                if(this.initWallInst.getPosition().y <= positionY){
+                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,1);
+                }else{
+                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,0);
+                }
+            }
+            else{
+                this.wallToPlayPos = false;
+                rigidBody.linearVelocity = new Vec2(0, 0); 
+            }
+            
         }
     }
 
