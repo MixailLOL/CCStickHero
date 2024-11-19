@@ -13,6 +13,7 @@ export class GameCtrl extends Component {
     public bridgeInst: Node;
     public isRotated = true;
     public leftWallToPlayPos = false;
+    public rightWallToPlayPos = false;
     public activeWall : [leftWall: Node, rightWall: Node] = [];
     @property({
         type: Player,
@@ -36,6 +37,7 @@ export class GameCtrl extends Component {
         this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
             this.leftWallToPlayPos = true;
+            this.rightWallToPlayPos = true;
             this.isOver = false;
             //this.player.startPlayPose();
             this.userInt.startPlayPose();  
@@ -48,8 +50,18 @@ export class GameCtrl extends Component {
     StateInit() {
         this.activeWall.leftWall = cc.instantiate(this.wallPref);
         this.activeWall.leftWall.parent = this.node.parent;
-        let wallWAdoptivWidthScale = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*3);
+        this.activeWall.rightWall = cc.instantiate(this.wallPref);
+        this.activeWall.rightWall.parent = this.node.parent;
+
+        let wallWAdoptivWidthScale = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*3.5);
         let wallWAdoptivHeightScale = (view.getVisibleSize().height)/(this.activeWall.leftWall.height*5);
+
+        let minRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*10);
+        let maxRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*4);
+
+        this.activeWall.rightWall.setScale(math.randomRange(minRightWWS, maxRightWWS),wallWAdoptivHeightScale,0);
+        this.activeWall.rightWall.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
+
         this.activeWall.leftWall.setScale(wallWAdoptivWidthScale,wallWAdoptivHeightScale,0);
         this.activeWall.leftWall.setPosition(0,-(view.getVisibleSize().height/2+(this.activeWall.leftWall.height*wallWAdoptivHeightScale*(1/6))));
         console.log(this.activeWall.leftWall.getPosition(), view.getVisibleSize())
@@ -111,9 +123,35 @@ export class GameCtrl extends Component {
             else{
                 this.leftWallToPlayPos = false;
                 rigidBody.linearVelocity = new Vec2(0, 0); 
-            }
-            
+            }  
         }
+
+        if(this.rightWallToPlayPos){
+            let rigidBody = this.activeWall.rightWall.getComponent(RigidBody2D);
+            //console.log(this.player.node.width*this.player.node.scale.x, view.getVisibleSize().width);
+            let leftBorder = -(view.getVisibleSize().width/2 - (this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x)/2 - (this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().x) - this.player.node.width/2*this.player.node.scale.x);
+            let rightBorder = view.getVisibleSize().width/2 - this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2;
+            let positionX = math.randomRange(leftBorder, rightBorder);
+            //console.log(leftBorder, rightBorder, positionX)
+            let positionY = -(view.getVisibleSize().height/2 - (this.activeWall.rightWall.height*this.activeWall.rightWall.getScale().y)/2);
+            if(this.activeWall.rightWall.getPosition().x >= positionX ||  this.activeWall.rightWall.getPosition().y <= positionY){
+                if(this.activeWall.rightWall.getPosition().x >= positionX){
+                    rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y);     
+                }else{
+                    rigidBody.linearVelocity = new Vec2(0, rigidBody.linearVelocity.y); 
+                }
+                if(this.activeWall.rightWall.getPosition().y <= positionY){
+                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,35);
+                }else{
+                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,0);
+                }
+            }
+            else{
+                this.rightWallToPlayPos = false;
+                rigidBody.linearVelocity = new Vec2(0, 0); 
+            }  
+        }
+
     }
 
 }
