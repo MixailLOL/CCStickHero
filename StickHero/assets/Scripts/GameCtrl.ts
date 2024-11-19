@@ -11,10 +11,9 @@ export class GameCtrl extends Component {
     public isOver = true;
     public isPressed = false;
     public bridgeInst: Node;
-    public initWallInst: Node;
     public isRotated = true;
-    public wallToPlayPos = false;
-
+    public leftWallToPlayPos = false;
+    public activeWall : [leftWall: Node, rightWall: Node] = [];
     @property({
         type: Player,
         tooltip: "Add Player node",
@@ -36,7 +35,7 @@ export class GameCtrl extends Component {
     onLoad(){
         this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
-            this.wallToPlayPos = true;
+            this.leftWallToPlayPos = true;
             this.isOver = false;
             //this.player.startPlayPose();
             this.userInt.startPlayPose();  
@@ -47,13 +46,13 @@ export class GameCtrl extends Component {
 
 
     StateInit() {
-        this.initWallInst = cc.instantiate(this.wallPref);
-        this.initWallInst.parent = this.node.parent;
-        let wallWAdoptivWidthScale = (view.getVisibleSize().width)/(this.initWallInst.width*3);
-        let wallWAdoptivHeightScale = (view.getVisibleSize().height)/(this.initWallInst.height*5);
-        this.initWallInst.setScale(wallWAdoptivWidthScale,wallWAdoptivHeightScale,0);
-        this.initWallInst.setPosition(0,-(view.getVisibleSize().height/2+(this.initWallInst.height*wallWAdoptivHeightScale*(1/6))));
-        console.log(this.initWallInst.getPosition(), view.getVisibleSize())
+        this.activeWall.leftWall = cc.instantiate(this.wallPref);
+        this.activeWall.leftWall.parent = this.node.parent;
+        let wallWAdoptivWidthScale = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*3);
+        let wallWAdoptivHeightScale = (view.getVisibleSize().height)/(this.activeWall.leftWall.height*5);
+        this.activeWall.leftWall.setScale(wallWAdoptivWidthScale,wallWAdoptivHeightScale,0);
+        this.activeWall.leftWall.setPosition(0,-(view.getVisibleSize().height/2+(this.activeWall.leftWall.height*wallWAdoptivHeightScale*(1/6))));
+        console.log(this.activeWall.leftWall.getPosition(), view.getVisibleSize())
         this.player.initPos();;
         this.userInt.initPos();
     }
@@ -93,24 +92,24 @@ export class GameCtrl extends Component {
                 this.isRotated = true;
             }
         }
-        if(this.wallToPlayPos){
-            let rigidBody = this.initWallInst.getComponent(RigidBody2D);
-            let positionX = -(view.getVisibleSize().width/2 - (this.initWallInst.width*this.initWallInst.getScale().x)/2);
-            let positionY = -(view.getVisibleSize().height/2 - (this.initWallInst.height*this.initWallInst.getScale().y)/2);
-            if(this.initWallInst.getPosition().x >= positionX ||  this.initWallInst.getPosition().y <= positionY){
-                if(this.initWallInst.getPosition().x >= positionX){
+        if(this.leftWallToPlayPos){
+            let rigidBody = this.activeWall.leftWall.getComponent(RigidBody2D);
+            let positionX = -(view.getVisibleSize().width/2 - (this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().x)/2);
+            let positionY = -(view.getVisibleSize().height/2 - (this.activeWall.leftWall.height*this.activeWall.leftWall.getScale().y)/2);
+            if(this.activeWall.leftWall.getPosition().x >= positionX ||  this.activeWall.leftWall.getPosition().y <= positionY){
+                if(this.activeWall.leftWall.getPosition().x >= positionX){
                     rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y);     
                 }else{
                     rigidBody.linearVelocity = new Vec2(0, rigidBody.linearVelocity.y); 
                 }
-                if(this.initWallInst.getPosition().y <= positionY){
+                if(this.activeWall.leftWall.getPosition().y <= positionY){
                     rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,35);
                 }else{
                     rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,0);
                 }
             }
             else{
-                this.wallToPlayPos = false;
+                this.leftWallToPlayPos = false;
                 rigidBody.linearVelocity = new Vec2(0, 0); 
             }
             
