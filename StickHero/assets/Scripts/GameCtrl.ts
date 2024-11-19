@@ -15,6 +15,7 @@ export class GameCtrl extends Component {
     public leftWallToPlayPos = false;
     public rightWallToPlayPos = false;
     public playerToPlayPos = false;
+    public playerToRightWall = false;
     public activeWall : [leftWall: Node, rightWall: Node] = [];
     @property({
         type: Player,
@@ -90,7 +91,7 @@ export class GameCtrl extends Component {
             let playerWidth = this.player.node.width;
             let playerHeight = this.player.node.height;
             let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x/2+this.bridgeInst.getScale().x*this.bridgeInst.width;
-            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y/2-this.bridgeInst.getScale().x*this.bridgeInst.width;
+            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y/2-this.bridgeInst.getScale().x*this.bridgeInst.width/2;
             this.bridgeInst.setPosition(bridgeInstX, bridgeInstY);
             console.log(this.bridgeInst);
             
@@ -101,6 +102,7 @@ export class GameCtrl extends Component {
         if(!this.isOver){
             this.isPressed = false;
             this.isRotated = false;
+            this.playerToRightWall = true;
         }
     }
 
@@ -146,6 +148,18 @@ export class GameCtrl extends Component {
             }
             else{
                 this.playerToPlayPos = false;
+                rigidBody.linearVelocity = new Vec2(0, 0); 
+            } 
+        }
+
+        if(this.playerToRightWall){
+            let positionX = (this.activeWall.rightWall.getPosition().x + this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2-this.player.node.width*this.player.node.scale.x);
+            let rigidBody = this.player.node.getComponent(RigidBody2D);
+            if(this.player.node.getPosition().x < positionX ){
+                rigidBody.linearVelocity = new Vec2(10, 0);     
+            }
+            else{
+                this.playerToRightWall = false;
                 rigidBody.linearVelocity = new Vec2(0, 0); 
             } 
         }
