@@ -89,9 +89,9 @@ export class GameCtrl extends Component {
             let playerPos = this.player.node.getPosition();
             let playerWidth = this.player.node.width;
             let playerHeight = this.player.node.height;
-            let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x;
-            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y;
-            this.bridgeInst.setPosition(bridgeInstX, bridgeInstY, playerPos.z);
+            let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x/2+this.bridgeInst.getScale().x*this.bridgeInst.width;
+            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y/2-this.bridgeInst.getScale().x*this.bridgeInst.width;
+            this.bridgeInst.setPosition(bridgeInstX, bridgeInstY);
             console.log(this.bridgeInst);
             
         }
@@ -139,11 +139,10 @@ export class GameCtrl extends Component {
         }
 
         if(this.playerToPlayPos){
-            let positionX = (this.activeWall.leftWall.getPosition().x + this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().x/2-this.player.node.width*this.player.node.scale.x/2);
+            let positionX = (this.activeWall.leftWall.getPosition().x + this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().x/2-this.player.node.width*this.player.node.scale.x);
             let rigidBody = this.player.node.getComponent(RigidBody2D);
             if(this.player.node.getPosition().x < positionX ){
-                console.log(this.player.node.getPosition().x, positionX);
-                rigidBody.linearVelocity = new Vec2(4, 0);     
+                rigidBody.linearVelocity = new Vec2(10, 0);     
             }
             else{
                 this.playerToPlayPos = false;
@@ -153,11 +152,9 @@ export class GameCtrl extends Component {
 
         if(this.rightWallToPlayPos){
             let rigidBody = this.activeWall.rightWall.getComponent(RigidBody2D);
-            //console.log(this.player.node.width*this.player.node.scale.x, view.getVisibleSize().width);
             let leftBorder = -(view.getVisibleSize().width/2 - (this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x)/2 - (this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().x) - this.player.node.width/2*this.player.node.scale.x);
             let rightBorder = view.getVisibleSize().width/2 - this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2;
             let positionX = math.randomRange(leftBorder, rightBorder);
-            //console.log(leftBorder, rightBorder, positionX)
             let positionY = -(view.getVisibleSize().height/2 - (this.activeWall.rightWall.height*this.activeWall.rightWall.getScale().y)/2);
             if(this.activeWall.rightWall.getPosition().x >= positionX ||  this.activeWall.rightWall.getPosition().y <= positionY){
                 if(this.activeWall.rightWall.getPosition().x > positionX){
@@ -176,7 +173,6 @@ export class GameCtrl extends Component {
                 rigidBody.linearVelocity = new Vec2(0, 0); 
             }  
         }
-
     }
 
 }
