@@ -46,6 +46,9 @@ export class GameCtrl extends Component {
         this.userInt.btnStart.node.on('click', () => {
             this.stateStart();
         })
+        this.userInt.btnRetry.node.on('click', () => {
+            this.StateInit();
+        })
         input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
         input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
     }
