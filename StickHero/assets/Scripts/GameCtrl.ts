@@ -17,6 +17,7 @@ export class GameCtrl extends Component {
     public playerToPlayPos = false;
     public playerToRightWall = false;
     public playerOnRightWall = false;
+    public bridgeInst: Node;
     public activeWall : [leftWall: Node, rightWall: Node] = [];
     @property({
         type: Player,
@@ -41,7 +42,10 @@ export class GameCtrl extends Component {
         this.activeWall.leftWall.parent = this.node.parent;
         this.activeWall.rightWall = cc.instantiate(this.wallPref);
         this.activeWall.rightWall.parent = this.node.parent;
-
+        this.bridgeInst = cc.instantiate(this.wallPref);
+        this.bridgeInst.parent = this.node.parent;
+        this.bridgeInst.setScale(0, 0);
+        this.bridgeInst.setPosition(0, 0);
         this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
             this.stateStart();
@@ -91,10 +95,8 @@ export class GameCtrl extends Component {
     }
 
     onTouchStart(event: EventTouch) {
-        if(!this.isOver){
+        if(!this.isOver && !this.playerToRightWall){
             this.isPressed = true;
-            this.bridgeInst = cc.instantiate(this.wallPref);
-            this.bridgeInst.parent = this.node.parent;
             this.bridgeInst.setScale(0.01, 0, 1);
             let playerPos = this.player.node.getPosition();
             let playerWidth = this.player.node.width;
@@ -106,7 +108,7 @@ export class GameCtrl extends Component {
     }
 
     onTouchEnd(event: EventTouch) {
-        if(!this.isOver){
+        if(!this.isOver && !this.playerToRightWall){
             this.isPressed = false;
             this.isRotated = false;
             this.playerToRightWall = true;
@@ -177,10 +179,10 @@ export class GameCtrl extends Component {
             bufNode = this.activeWall.leftWall;
             this.activeWall.leftWall = this.activeWall.rightWall;
             this.activeWall.rightWall = bufNode;
-            //bufNode.destroy();
             this.playerOnRightWall = false;
-            this.bridgeInst.destroy();
             this.stateStart();
+            this.bridgeInst.angle = 0;
+            this.bridgeInst.setScale(0,0);
         }
 
         if(this.rightWallToPlayPos){
@@ -191,7 +193,7 @@ export class GameCtrl extends Component {
             let positionY = -(view.getVisibleSize().height/2 - (this.activeWall.rightWall.height*this.activeWall.rightWall.getScale().y)/2);
             if(this.activeWall.rightWall.getPosition().x >= positionX ||  this.activeWall.rightWall.getPosition().y <= positionY){
                 if(this.activeWall.rightWall.getPosition().x > positionX){
-                    rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y);     
+                    rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y); 
                 }else{
                     rigidBody.linearVelocity = new Vec2(0, rigidBody.linearVelocity.y); 
                 }
