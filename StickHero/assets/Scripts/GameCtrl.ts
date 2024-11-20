@@ -116,7 +116,7 @@ export class GameCtrl extends Component {
     update (deltaTime: number) {
         if(this.isPressed == true){
             let bridgeScale = this.bridgeInst.getScale();
-            this.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01, bridgeScale.z);
+            this.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01);
         }
         if(!this.isRotated){
             this.bridgeInst.angle -= 5;
@@ -151,7 +151,7 @@ export class GameCtrl extends Component {
             let positionX = (this.activeWall.leftWall.getPosition().x + this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().x/2-this.player.node.width*this.player.node.scale.x);
             let rigidBody = this.player.node.getComponent(RigidBody2D);
             if(this.player.node.getPosition().x < positionX ){
-                rigidBody.linearVelocity = new Vec2(10, 0);     
+                rigidBody.linearVelocity = new Vec2(21, 0);     
             }
             else{
                 this.playerToPlayPos = false;
@@ -163,7 +163,7 @@ export class GameCtrl extends Component {
             let positionX = (this.activeWall.rightWall.getPosition().x + this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2-this.player.node.width*this.player.node.scale.x);
             let rigidBody = this.player.node.getComponent(RigidBody2D);
             if(this.player.node.getPosition().x < positionX ){
-                rigidBody.linearVelocity = new Vec2(10, 0);     
+                rigidBody.linearVelocity = new Vec2(21, 0);     
             }
             else{
                 this.playerToRightWall = false;
