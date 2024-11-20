@@ -16,6 +16,7 @@ export class GameCtrl extends Component {
     public rightWallToPlayPos = false;
     public playerToPlayPos = false;
     public playerToRightWall = false;
+    public playerOnRightWall = false;
     public activeWall : [leftWall: Node, rightWall: Node] = [];
     @property({
         type: Player,
@@ -36,33 +37,38 @@ export class GameCtrl extends Component {
     public userInt: UserInt;
 
     onLoad(){
+        this.activeWall.leftWall = cc.instantiate(this.wallPref);
+        this.activeWall.leftWall.parent = this.node.parent;
+        this.activeWall.rightWall = cc.instantiate(this.wallPref);
+        this.activeWall.rightWall.parent = this.node.parent;
+
         this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
-            this.leftWallToPlayPos = true;
-            this.rightWallToPlayPos = true;
-            this.isOver = false;
-            //this.player.startPlayPose();
-            this.userInt.startPlayPose();  
+            this.stateStart();
         })
         input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
         input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
     }
 
+    stateStart(){
+        this.activeWall.rightWall.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
+
+        this.leftWallToPlayPos = true;
+        this.rightWallToPlayPos = true;
+        this.isOver = false;
+        this.userInt.startPlayPose();  
+    }
 
     StateInit() {
-        this.activeWall.leftWall = cc.instantiate(this.wallPref);
-        this.activeWall.leftWall.parent = this.node.parent;
-        this.activeWall.rightWall = cc.instantiate(this.wallPref);
-        this.activeWall.rightWall.parent = this.node.parent;
+        
+        let minRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*10);
+        let maxRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*4);
 
         let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*3.5);
         let wallAdoptivHeightScale = (view.getVisibleSize().height)/(this.activeWall.leftWall.height*5);
 
         let playerAdoptivWidthScale = (view.getVisibleSize().width)/(this.player.node.width*13);
         let playerAdoptivHeightScale = (view.getVisibleSize().height)/(this.player.node.height*13);
-
-        let minRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*10);
-        let maxRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*4);
 
         this.activeWall.rightWall.setScale(math.randomRange(minRightWWS, maxRightWWS),wallAdoptivHeightScale,0);
         this.activeWall.rightWall.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
@@ -93,8 +99,6 @@ export class GameCtrl extends Component {
             let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x/2+this.bridgeInst.getScale().x*this.bridgeInst.width;
             let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y/2-this.bridgeInst.getScale().x*this.bridgeInst.width/2;
             this.bridgeInst.setPosition(bridgeInstX, bridgeInstY);
-            console.log(this.bridgeInst);
-            
         }
     }
 
@@ -160,8 +164,20 @@ export class GameCtrl extends Component {
             }
             else{
                 this.playerToRightWall = false;
-                rigidBody.linearVelocity = new Vec2(0, 0); 
+                rigidBody.linearVelocity = new Vec2(0, 0);
+                this.playerOnRightWall = true; 
             } 
+        }
+
+        if(this.playerOnRightWall){
+            let bufNode : Node;
+            bufNode = this.activeWall.leftWall;
+            this.activeWall.leftWall = this.activeWall.rightWall;
+            this.activeWall.rightWall = bufNode;
+            //bufNode.destroy();
+            this.playerOnRightWall = false;
+            this.bridgeInst.destroy();
+            this.stateStart();
         }
 
         if(this.rightWallToPlayPos){
