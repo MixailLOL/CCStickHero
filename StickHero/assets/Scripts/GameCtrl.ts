@@ -10,6 +10,7 @@ import { Wall } from './Wall';
 export class GameCtrl extends Component {
     public isOver = false;
     public score = 0;
+    public bestScore = 0;
     public isPressed = false;
     public bridgeInst: Node;
     public isRotated = true;
@@ -74,6 +75,8 @@ export class GameCtrl extends Component {
         this.isOver = false;
         this.userInt.gameOver.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.8);
         this.userInt.btnRetry.node.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.4);
+        this.bestScore = this.score > this.bestScore?this.score:this.bestScore;
+        this.userInt.bestScore.getComponent(Label).string = this.bestScore;
     }
 
     StateInit() {
@@ -97,7 +100,9 @@ export class GameCtrl extends Component {
         this.activeWall.leftWall.setPosition(0,-(view.getVisibleSize().height/2+(this.activeWall.leftWall.height*wallAdoptivHeightScale*(1/6))));
 
         this.userInt.score.getComponent(Label).string = this.score;
-        this.userInt.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);        
+        this.userInt.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
+        this.userInt.bestScore.getComponent(Label).string = this.bestScore;
+        this.userInt.bestScore.setPosition(view.getVisibleSize().width*(3/4), view.getVisibleSize().height*0.9);   
 
         this.player.node.setScale(playerAdoptivWidthScale, playerAdoptivHeightScale);
 

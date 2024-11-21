@@ -27,6 +27,12 @@ export class UserInt extends Component {
     })
     public gameOver: Node;
 
+    @property({
+        type: Node,
+        tooltip: "Best score",
+    })
+    public bestScore: Node;
+
 
     initPos() {
        this.btnStart.node.setPosition(320, 550);
