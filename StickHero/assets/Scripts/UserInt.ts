@@ -15,6 +15,12 @@ export class UserInt extends Component {
     })
     public btnRetry: Button;
 
+    @property({
+        type: Node,
+        tooltip: "score",
+    })
+    public score: Node;
+
     initPos() {
        this.btnStart.node.setPosition(320, 550);
    }

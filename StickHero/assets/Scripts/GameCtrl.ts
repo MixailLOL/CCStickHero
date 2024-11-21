@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math, Vec2, RigidBody2D, view } from 'cc';
+import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math, Vec2, RigidBody2D, view, Label } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -9,6 +9,7 @@ import { Wall } from './Wall';
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
     public isOver = true;
+    public score = 0;
     public isPressed = false;
     public bridgeInst: Node;
     public isRotated = true;
@@ -82,14 +83,14 @@ export class GameCtrl extends Component {
 
         this.activeWall.leftWall.setScale(wallAdoptivWidthScale,wallAdoptivHeightScale,0);
         this.activeWall.leftWall.setPosition(0,-(view.getVisibleSize().height/2+(this.activeWall.leftWall.height*wallAdoptivHeightScale*(1/6))));
-        
-        
+
+        this.userInt.score.getComponent(Label).string = this.score;
+        this.userInt.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);        
 
         this.player.node.setScale(playerAdoptivWidthScale, playerAdoptivHeightScale);
 
         let playerInitPosY = this.activeWall.leftWall.getPosition().y+this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().y;
         this.player.node.setPosition(0,playerInitPosY);
-        //this.player.node.setPosition(this.activeWall.leftWall.width*this.activeWall.leftWall.getScale().x/2-this.player.node.width*playerAdoptivWidthScale/2,0);
 
         this.userInt.initPos();
     }
@@ -112,6 +113,21 @@ export class GameCtrl extends Component {
             this.isPressed = false;
             this.isRotated = false;
             this.playerToRightWall = true;
+        }
+        this.score += this.checkWhereBridge();
+        this.userInt.score.getComponent(Label).string = this.score;
+    }
+
+    checkWhereBridge(){
+        let rightWallCenter = this.activeWall.rightWall.getPosition.x;
+        let rightWallCenterLCorner = this.activeWall.rightWall.getPosition().x- this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2;
+        let rightWallCenterRCorner = this.activeWall.rightWall.getPosition().x+ this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2;
+        let bridgeRightCorner = this.bridgeInst.getPosition().x+this.bridgeInst.height/2*this.bridgeInst.getScale().y;
+        if(rightWallCenterLCorner < bridgeRightCorner && bridgeRightCorner < rightWallCenterRCorner){
+            return 1;
+        }
+        else{
+            return 0;
         }
     }
 
