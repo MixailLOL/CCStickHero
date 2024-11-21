@@ -16,9 +16,11 @@ export class GameCtrl extends Component {
     public leftWallToPlayPos = false;
     public rightWallToPlayPos = false;
     public playerToPlayPos = false;
-    public playerToRightWall = false;
+    public playerToRightBridgeCorner = false;
     public playerOnRightWall = false;
+    public badBridge = false;
     public bridgeInst: Node;
+    public angleCount = 0;
     public activeWall : [leftWall: Node, rightWall: Node] = [];
     @property({
         type: Player,
@@ -96,7 +98,7 @@ export class GameCtrl extends Component {
     }
 
     onTouchStart(event: EventTouch) {
-        if(!this.isOver && !this.playerToRightWall){
+        if(!this.isOver && !this.playerToRightBridgeCorner){
             this.isPressed = true;
             this.bridgeInst.setScale(0.01, 0, 1);
             let playerPos = this.player.node.getPosition();
@@ -109,13 +111,13 @@ export class GameCtrl extends Component {
     }
 
     onTouchEnd(event: EventTouch) {
-        if(!this.isOver && !this.playerToRightWall){
+        if(!this.isOver && !this.playerToRightBridgeCorner){
             this.isPressed = false;
             this.isRotated = false;
-            this.playerToRightWall = true;
+            this.playerToRightBridgeCorner = true;
+            this.score += this.checkWhereBridge();
+            this.userInt.score.getComponent(Label).string = this.score;
         }
-        this.score += this.checkWhereBridge();
-        this.userInt.score.getComponent(Label).string = this.score;
     }
 
     checkWhereBridge(){
@@ -124,9 +126,11 @@ export class GameCtrl extends Component {
         let rightWallCenterRCorner = this.activeWall.rightWall.getPosition().x+ this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2;
         let bridgeRightCorner = this.bridgeInst.getPosition().x+this.bridgeInst.height/2*this.bridgeInst.getScale().y;
         if(rightWallCenterLCorner < bridgeRightCorner && bridgeRightCorner < rightWallCenterRCorner){
+            this.badBridge = false;
             return 1;
         }
         else{
+            this.badBridge = true;
             return 0;
         }
     }
@@ -138,8 +142,10 @@ export class GameCtrl extends Component {
         }
         if(!this.isRotated){
             this.bridgeInst.angle -= 5;
-            if(this.bridgeInst.angle <= -90){
+            this.angleCount -= 5;
+            if(this.angleCount <= -90){
                 this.isRotated = true;
+                this.angleCount = 0;
             }
         }
         if(this.leftWallToPlayPos){
@@ -177,16 +183,26 @@ export class GameCtrl extends Component {
             } 
         }
 
-        if(this.playerToRightWall){
-            let positionX = (this.activeWall.rightWall.getPosition().x + this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2-this.player.node.width*this.player.node.scale.x);
+        if(this.playerToRightBridgeCorner){
+            let positionX = 0;
+            let bridgeRightCorner = this.bridgeInst.getPosition().x+this.bridgeInst.height/2*this.bridgeInst.getScale().y;
+            if(this.badBridge){
+                positionX = bridgeRightCorner+this.player.node.width*this.player.node.scale.x;
+            }else{
+                positionX = (this.activeWall.rightWall.getPosition().x + this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2-this.player.node.width*this.player.node.scale.x);
+            }
+            
             let rigidBody = this.player.node.getComponent(RigidBody2D);
-            if(this.player.node.getPosition().x < positionX ){
+            if(this.player.node.getPosition().x <= positionX ){
                 rigidBody.linearVelocity = new Vec2(21, 0);     
             }
             else{
-                this.playerToRightWall = false;
+                this.playerToRightBridgeCorner = false;
                 rigidBody.linearVelocity = new Vec2(0, 0);
                 this.playerOnRightWall = true; 
+                if(this.badBridge){
+                    this.isRotated = false;
+                }
             } 
         }
 
