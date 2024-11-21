@@ -8,7 +8,7 @@ import { Wall } from './Wall';
 
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
-    public isOver = true;
+    public isOver = false;
     public score = 0;
     public isPressed = false;
     public bridgeInst: Node;
@@ -62,15 +62,25 @@ export class GameCtrl extends Component {
 
     stateStart(){
         this.activeWall.rightWall.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
-
         this.leftWallToPlayPos = true;
         this.rightWallToPlayPos = true;
         this.isOver = false;
         this.userInt.startPlayPose();  
     }
 
+    stateLose(){
+        this.activeWall.rightWall.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
+        this.activeWall.leftWall.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
+        this.isOver = false;
+        this.userInt.gameOver.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.8);
+        this.userInt.btnRetry.node.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.4);
+    }
+
     StateInit() {
-        
+        this.score = 0;
+        this.userInt.gameOver.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
+        this.userInt.btnRetry.node.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
+
         let minRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*10);
         let maxRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.width*4);
 
@@ -136,6 +146,10 @@ export class GameCtrl extends Component {
     }
 
     update (deltaTime: number) {
+        if(this.player.node.getPosition().y <= -view.getVisibleSize().height/2){
+            this.isOver = true;
+            this.stateLose();
+        }
         if(this.isPressed == true){
             let bridgeScale = this.bridgeInst.getScale();
             this.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01);
@@ -200,9 +214,9 @@ export class GameCtrl extends Component {
                 this.playerToRightBridgeCorner = false;
                 rigidBody.linearVelocity = new Vec2(0, 0);
                 this.playerOnRightWall = true; 
-                if(this.badBridge){
+                /*if(this.badBridge){
                     this.isRotated = false;
-                }
+                }*/
             } 
         }
 

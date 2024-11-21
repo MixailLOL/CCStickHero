@@ -21,6 +21,13 @@ export class UserInt extends Component {
     })
     public score: Node;
 
+    @property({
+        type: Node,
+        tooltip: "Game over",
+    })
+    public gameOver: Node;
+
+
     initPos() {
        this.btnStart.node.setPosition(320, 550);
    }
