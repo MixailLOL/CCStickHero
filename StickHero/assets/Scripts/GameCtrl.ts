@@ -65,7 +65,6 @@ export class GameCtrl extends Component {
         this.activeWall.rightWall.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         this.leftWallToPlayPos = true;
         this.rightWallToPlayPos = true;
-        this.isOver = false;
         this.userInt.startPlayPose();  
     }
 
@@ -80,6 +79,7 @@ export class GameCtrl extends Component {
     }
 
     StateInit() {
+        this.isOver =false;
         this.score = 0;
         this.userInt.gameOver.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
         this.userInt.btnRetry.node.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
@@ -213,15 +213,16 @@ export class GameCtrl extends Component {
             
             let rigidBody = this.player.node.getComponent(RigidBody2D);
             if(this.player.node.getPosition().x <= positionX ){
-                rigidBody.linearVelocity = new Vec2(21, 0);     
+                rigidBody.linearVelocity = new Vec2(27, 0);     
             }
             else{
                 this.playerToRightBridgeCorner = false;
                 rigidBody.linearVelocity = new Vec2(0, 0);
-                this.playerOnRightWall = true; 
-                /*if(this.badBridge){
-                    this.isRotated = false;
-                }*/
+                this.bridgeInst.setScale(0,0);
+                this.bridgeInst.angle = 0; 
+                if(!this.badBridge){
+                    this.playerOnRightWall = true;
+                }
             } 
         }
 
@@ -232,8 +233,6 @@ export class GameCtrl extends Component {
             this.activeWall.rightWall = bufNode;
             this.playerOnRightWall = false;
             this.stateStart();
-            this.bridgeInst.angle = 0;
-            this.bridgeInst.setScale(0,0);
         }
 
         if(this.rightWallToPlayPos){
