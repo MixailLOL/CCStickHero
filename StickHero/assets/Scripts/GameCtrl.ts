@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math, Vec2, RigidBody2D, view, Label } from 'cc';
+import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math, Vec2, RigidBody2D, view, Label, BoxCollider2D } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -21,7 +21,6 @@ export class GameCtrl extends Component {
     public playerOnRightWall = false;
     public badBridge = false;
     public bridgeInst: Node;
-    public angleCount = 0;
     public activeWall : [leftWall: Node, rightWall: Node] = [];
     @property({
         type: Player,
@@ -79,6 +78,8 @@ export class GameCtrl extends Component {
     }
 
     StateInit() {
+        this.activeWall.leftWall.getComponent(BoxCollider2D).enabled = true;
+        this.activeWall.rightWall.getComponent(BoxCollider2D).enabled = true;
         this.isOver =false;
         this.score = 0;
         this.userInt.gameOver.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
@@ -161,10 +162,8 @@ export class GameCtrl extends Component {
         }
         if(!this.isRotated){
             this.bridgeInst.angle -= 5;
-            this.angleCount -= 5;
-            if(this.angleCount <= -90){
+            if(this.bridgeInst.angle <= -90){
                 this.isRotated = true;
-                this.angleCount = 0;
             }
         }
         if(this.leftWallToPlayPos){
@@ -206,7 +205,7 @@ export class GameCtrl extends Component {
             let positionX = 0;
             let bridgeRightCorner = this.bridgeInst.getPosition().x+this.bridgeInst.height/2*this.bridgeInst.getScale().y;
             if(this.badBridge){
-                positionX = bridgeRightCorner+this.player.node.width*this.player.node.scale.x;
+                positionX = bridgeRightCorner-this.player.node.width*this.player.node.scale.x/2;
             }else{
                 positionX = (this.activeWall.rightWall.getPosition().x + this.activeWall.rightWall.width*this.activeWall.rightWall.getScale().x/2-this.player.node.width*this.player.node.scale.x);
             }
@@ -219,9 +218,13 @@ export class GameCtrl extends Component {
                 this.playerToRightBridgeCorner = false;
                 rigidBody.linearVelocity = new Vec2(0, 0);
                 this.bridgeInst.setScale(0,0);
-                this.bridgeInst.angle = 0; 
+                this.bridgeInst.angle = 0;
+                //this.activeWall.rightWall.getComponent(RigidBody2D). 
                 if(!this.badBridge){
                     this.playerOnRightWall = true;
+                }else{
+                    this.activeWall.leftWall.getComponent(BoxCollider2D).enabled = false;
+                    this.activeWall.rightWall.getComponent(BoxCollider2D).enabled = false;
                 }
             } 
         }
