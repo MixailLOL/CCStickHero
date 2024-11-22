@@ -53,11 +53,6 @@ export class GameCtrl extends Component {
     public userInt: UserInt;
 
     onLoad(){
-        /*this.activeWall.leftWall = cc.instantiate(this.wallPref);
-        this.activeWall.leftWall.parent = this.node.parent;
-        this.activeWall.rightWall = cc.instantiate(this.wallPref);
-        this.activeWall.rightWall.parent = this.node.parent;*/
-
         this.activeWall.leftWall = this.wall1;
         this.activeWall.rightWall = this.wall2;
         this.bridgeInst = cc.instantiate(this.wallPref);
@@ -98,37 +93,21 @@ export class GameCtrl extends Component {
 
     StateInit() {
         console.log("state init");
-        this.activeWall.leftWall.getComponent(BoxCollider2D).enabled = true;
-        this.activeWall.rightWall.getComponent(BoxCollider2D).enabled = true;
+        this.activeWall.rightWall.stateInitR();
+        this.activeWall.leftWall.stateInitL();
         this.isOver =false;
         this.score = 0;
         this.userInt.gameOver.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
         this.userInt.btnRetry.node.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
-
-        let minRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.node.width*10);
-        let maxRightWWS = (view.getVisibleSize().width)/(this.activeWall.leftWall.node.width*4);
-
-        let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.activeWall.leftWall.node.width*3.5);
-        let wallAdoptivHeightScale = (view.getVisibleSize().height)/(this.activeWall.leftWall.node.height*5);
-
         let playerAdoptivWidthScale = (view.getVisibleSize().width)/(this.player.node.width*13);
         let playerAdoptivHeightScale = (view.getVisibleSize().height)/(this.player.node.height*13);
-
-        this.activeWall.rightWall.node.setScale(math.randomRange(minRightWWS, maxRightWWS),wallAdoptivHeightScale);
-        this.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
-
-        this.activeWall.leftWall.node.setScale(wallAdoptivWidthScale,wallAdoptivHeightScale);
-        this.activeWall.leftWall.node.setPosition(0,-(view.getVisibleSize().height/2+(this.activeWall.leftWall.node.height*wallAdoptivHeightScale*(1/6))));
-
         this.userInt.score.getComponent(Label).string = this.score;
         this.userInt.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
         this.userInt.bestScore.getComponent(Label).string = this.bestScore;
         this.userInt.bestScore.setPosition(view.getVisibleSize().width*(3/4), view.getVisibleSize().height*0.9);   
-
         this.player.node.setScale(playerAdoptivWidthScale, playerAdoptivHeightScale);
         let playerInitPosY = this.activeWall.leftWall.node.getPosition().y+this.activeWall.leftWall.node.width*this.activeWall.leftWall.node.getScale().y;
         this.player.node.setPosition(0,playerInitPosY);
-
         this.userInt.initPos();
     }
 
