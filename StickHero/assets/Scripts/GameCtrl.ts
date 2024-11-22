@@ -8,6 +8,10 @@ import { Wall } from './Wall';
 window.Global = {
     playerToPlayPos : false,
     activeWall : {leftWall: Wall, rightWall: Wall},
+    bridgeInst : Node,
+    playerOnRightWall: false,
+    badBridge : false,
+    playerToRightBridgeCorner : false,
 }
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
@@ -15,11 +19,7 @@ export class GameCtrl extends Component {
     public score = 0;
     public bestScore = 0;
     public isPressed = false;
-    public bridgeInst: Node;
     public isRotated = true;
-    public playerToRightBridgeCorner = false;
-    public playerOnRightWall = false;
-    public badBridge = false;
     public bridgeInst: Node;
     @property({
         type: Player,
@@ -52,13 +52,12 @@ export class GameCtrl extends Component {
     public userInt: UserInt;
 
     onLoad(){
-        console.log("onload state");
         Global.activeWall.leftWall = this.wall1;
         Global.activeWall.rightWall = this.wall2;
-        this.bridgeInst = cc.instantiate(this.wallPref);
-        this.bridgeInst.parent = this.node.parent;
-        this.bridgeInst.setScale(0, 0);
-        this.bridgeInst.setPosition(0, 0);
+        Global.bridgeInst = cc.instantiate(this.wallPref);
+        Global.bridgeInst.parent = this.node.parent;
+        Global.bridgeInst.setScale(0, 0);
+        Global.bridgeInst.setPosition(0, 0);
         this.StateInit();
         this.userInt.btnStart.node.on('click', () => {
             this.stateStart();
@@ -78,7 +77,6 @@ export class GameCtrl extends Component {
     }
 
     stateLose(){
-        console.log("state loose");
         Global.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.activeWall.leftWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         this.isOver = false;
@@ -89,7 +87,6 @@ export class GameCtrl extends Component {
     }
 
     StateInit() {
-        console.log("state init");
         Global.activeWall.rightWall.stateInitR();
         Global.activeWall.leftWall.stateInitL();
         this.isOver =false;
@@ -109,23 +106,23 @@ export class GameCtrl extends Component {
     }
 
     onTouchStart(event: EventTouch) {
-        if(!this.isOver && !this.playerToRightBridgeCorner){
+        if(!this.isOver && !Global.playerToRightBridgeCorner){
             this.isPressed = true;
-            this.bridgeInst.setScale(0.01, 0, 1);
+            Global.bridgeInst.setScale(0.01, 0, 1);
             let playerPos = this.player.node.getPosition();
             let playerWidth = this.player.node.width;
             let playerHeight = this.player.node.height;
-            let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x/2+this.bridgeInst.getScale().x*this.bridgeInst.width;
-            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y/2-this.bridgeInst.getScale().x*this.bridgeInst.width/2;
-            this.bridgeInst.setPosition(bridgeInstX, bridgeInstY);
+            let bridgeInstX = playerPos.x + playerWidth*this.player.node.scale.x/2+Global.bridgeInst.getScale().x*Global.bridgeInst.width;
+            let bridgeInstY = playerPos.y - playerHeight*this.player.node.scale.y/2-Global.bridgeInst.getScale().x*Global.bridgeInst.width/2;
+            Global.bridgeInst.setPosition(bridgeInstX, bridgeInstY);
         }
     }
 
     onTouchEnd(event: EventTouch) {
-        if(!this.isOver && !this.playerToRightBridgeCorner){
+        if(!this.isOver && !Global.playerToRightBridgeCorner){
             this.isPressed = false;
             this.isRotated = false;
-            this.playerToRightBridgeCorner = true;
+            Global.playerToRightBridgeCorner = true;
             this.score += this.checkWhereBridge();
             this.userInt.score.getComponent(Label).string = this.score;
         }
@@ -134,71 +131,39 @@ export class GameCtrl extends Component {
     checkWhereBridge(){
         let rightWallCenterLCorner = Global.activeWall.rightWall.node.getPosition().x- Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x/2;
         let rightWallCenterRCorner = Global.activeWall.rightWall.node.getPosition().x+ Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x/2;
-        let bridgeRightCorner = this.bridgeInst.getPosition().x+this.bridgeInst.height/2*this.bridgeInst.getScale().y;
+        let bridgeRightCorner = Global.bridgeInst.getPosition().x+Global.bridgeInst.height/2*Global.bridgeInst.getScale().y;
         if(rightWallCenterLCorner < bridgeRightCorner && bridgeRightCorner < rightWallCenterRCorner){
-            this.badBridge = false;
+            Global.badBridge = false;
             return 1;
         }
         else{
-            this.badBridge = true;
+            Global.badBridge = true;
             return 0;
         }
     }
 
     update (deltaTime: number) {
         if(this.player.node.getPosition().y <= -view.getVisibleSize().height/2){
-            console.log("1");
             this.isOver = true;
             this.stateLose();
         }
         if(this.isPressed == true){
-            console.log("2");
-            let bridgeScale = this.bridgeInst.getScale();
-            this.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01);
+            let bridgeScale = Global.bridgeInst.getScale();
+            Global.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01);
         }
         if(!this.isRotated){
-            console.log("3");
-            this.bridgeInst.angle -= 5;
-            if(this.bridgeInst.angle <= -90){
+            Global.bridgeInst.angle -= 5;
+            if(Global.bridgeInst.angle <= -90){
                 this.isRotated = true;
             }
         }
-        if(this.playerToRightBridgeCorner){
-            console.log("6");
-            let positionX = 0;
-            let bridgeRightCorner = this.bridgeInst.getPosition().x+this.bridgeInst.height/2*this.bridgeInst.getScale().y;
-            if(this.badBridge){
-                positionX = bridgeRightCorner-this.player.node.width*this.player.node.scale.x/2;
-            }else{
-                positionX = (Global.activeWall.rightWall.node.getPosition().x + Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x/2-this.player.node.width*this.player.node.scale.x);
-            }
-            
-            let rigidBody = this.player.node.getComponent(RigidBody2D);
-            if(this.player.node.getPosition().x <= positionX ){
-                rigidBody.linearVelocity = new Vec2(27, 0);     
-            }
-            else{
-                this.playerToRightBridgeCorner = false;
-                rigidBody.linearVelocity = new Vec2(0, 0);
-                this.bridgeInst.setScale(0,0);
-                this.bridgeInst.angle = 0;
-                //Global.activeWall.rightWall.getComponent(RigidBody2D). 
-                if(!this.badBridge){
-                    this.playerOnRightWall = true;
-                }else{
-                    Global.activeWall.leftWall.getComponent(BoxCollider2D).enabled = false;
-                    Global.activeWall.rightWall.getComponent(BoxCollider2D).enabled = false;
-                }
-            } 
-        }
 
-        if(this.playerOnRightWall){
-            console.log("7");
+        if(Global.playerOnRightWall){
             let bufNode : Node;
             bufNode = Global.activeWall.leftWall;
             Global.activeWall.leftWall = Global.activeWall.rightWall;
             Global.activeWall.rightWall = bufNode;
-            this.playerOnRightWall = false;
+            Global.playerOnRightWall = false;
             this.stateStart();
         }
     }
