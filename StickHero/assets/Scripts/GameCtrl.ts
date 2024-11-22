@@ -5,7 +5,9 @@ const { ccclass, property } = _decorator;
 import { Player } from './Player';
 import { UserInt } from './UserInt';
 import { Wall } from './Wall';
-
+window.Global = {
+    playerToPlayPos : false,
+}
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
     public isOver = false;
@@ -16,7 +18,6 @@ export class GameCtrl extends Component {
     public isRotated = true;
     public leftWallToPlayPos = false;
     public rightWallToPlayPos = false;
-    public playerToPlayPos = false;
     public playerToRightBridgeCorner = false;
     public playerOnRightWall = false;
     public badBridge = false;
@@ -53,6 +54,7 @@ export class GameCtrl extends Component {
     public userInt: UserInt;
 
     onLoad(){
+        console.log("onload state");
         this.activeWall.leftWall = this.wall1;
         this.activeWall.rightWall = this.wall2;
         this.bridgeInst = cc.instantiate(this.wallPref);
@@ -68,7 +70,6 @@ export class GameCtrl extends Component {
         })
         input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
         input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        console.log("onload state");
     }
 
     stateStart(){
@@ -185,12 +186,12 @@ export class GameCtrl extends Component {
             }
             else{
                 this.leftWallToPlayPos = false;
-                this.playerToPlayPos = true;
+                Global.playerToPlayPos = true;
                 rigidBody.linearVelocity = new Vec2(0, 0); 
             }  
         }
 
-        if(this.playerToPlayPos){
+        if(Global.playerToPlayPos){
             console.log("5");
             let positionX = (this.activeWall.leftWall.node.getPosition().x + this.activeWall.leftWall.node.width*this.activeWall.leftWall.node.getScale().x/2-this.player.node.width*this.player.node.scale.x);
             let rigidBody = this.player.node.getComponent(RigidBody2D);
@@ -198,7 +199,7 @@ export class GameCtrl extends Component {
                 rigidBody.linearVelocity = new Vec2(21, 0);     
             }
             else{
-                this.playerToPlayPos = false;
+                Global.playerToPlayPos = false;
                 rigidBody.linearVelocity = new Vec2(0, 0); 
             } 
         }
