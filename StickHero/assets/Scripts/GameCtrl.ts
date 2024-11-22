@@ -16,7 +16,6 @@ export class GameCtrl extends Component {
     public isPressed = false;
     public bridgeInst: Node;
     public isRotated = true;
-    public rightWallToPlayPos = false;
     public playerToRightBridgeCorner = false;
     public playerOnRightWall = false;
     public badBridge = false;
@@ -76,7 +75,7 @@ export class GameCtrl extends Component {
         console.log(this.activeWall.rightWall, this.activeWall.rightWall.node.getScale().x)
         this.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         this.activeWall.leftWall.leftWallToPlayPosF();
-        this.rightWallToPlayPos = true;
+        this.activeWall.rightWall.rightWallToPlayPosF();
         this.userInt.startPlayPose();  
     }
 
@@ -216,31 +215,6 @@ export class GameCtrl extends Component {
             this.activeWall.rightWall = bufNode;
             this.playerOnRightWall = false;
             this.stateStart();
-        }
-
-        if(this.rightWallToPlayPos){
-            console.log("8");
-            let rigidBody = this.activeWall.rightWall.getComponent(RigidBody2D);
-            let leftBorder = -(view.getVisibleSize().width/2 - (this.activeWall.rightWall.node.width*this.activeWall.rightWall.node.getScale().x)/2 - (this.activeWall.leftWall.node.width*this.activeWall.leftWall.node.getScale().x) - this.player.node.width/2*this.player.node.scale.x);
-            let rightBorder = view.getVisibleSize().width/2 - this.activeWall.rightWall.node.width*this.activeWall.rightWall.node.getScale().x/2;
-            let positionX = math.randomRange(leftBorder, rightBorder);
-            let positionY = -(view.getVisibleSize().height/2 - (this.activeWall.rightWall.node.height*this.activeWall.rightWall.node.getScale().y)/2);
-            if(this.activeWall.rightWall.node.getPosition().x >= positionX ||  this.activeWall.rightWall.node.getPosition().y <= positionY){
-                if(this.activeWall.rightWall.node.getPosition().x > positionX){
-                    rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y); 
-                }else{
-                    rigidBody.linearVelocity = new Vec2(0, rigidBody.linearVelocity.y); 
-                }
-                if(this.activeWall.rightWall.node.getPosition().y < positionY){
-                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,35);
-                }else{
-                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,0);
-                }
-            }
-            else{
-                this.rightWallToPlayPos = false;
-                rigidBody.linearVelocity = new Vec2(0, 0); 
-            }  
         }
     }
 

@@ -5,6 +5,7 @@ const { ccclass, property } = _decorator;
 export class Wall extends Component {
 
     public leftWallToPlayPos = false;
+    public rightWallToPlayPos = false;
 
     stateInitR(){
         let minRightWWS = (view.getVisibleSize().width)/(this.node.width*10);
@@ -29,6 +30,10 @@ export class Wall extends Component {
         this.leftWallToPlayPos = true;
     }
 
+    rightWallToPlayPosF(){
+        this.rightWallToPlayPos = true;
+    }
+
     update (deltaTime: number){
         if(this.leftWallToPlayPos){
             let rigidBody = this.getComponent(RigidBody2D);
@@ -49,6 +54,30 @@ export class Wall extends Component {
             else{
                 this.leftWallToPlayPos = false;
                 Global.playerToPlayPos = true;
+                rigidBody.linearVelocity = new Vec2(0, 0); 
+            }  
+        }
+
+        if(this.rightWallToPlayPos){
+            let rigidBody = this.getComponent(RigidBody2D);
+            let leftBorder = -(view.getVisibleSize().width/2 - (this.node.width*this.node.getScale().x)/2 - (this.node.width*this.node.getScale().x) - this.node.parent.children[2].width/2*this.node.parent.children[2].scale.x);
+            let rightBorder = view.getVisibleSize().width/2 - this.node.width*this.node.getScale().x/2;
+            let positionX = math.randomRange(leftBorder, rightBorder);
+            let positionY = -(view.getVisibleSize().height/2 - (this.node.height*this.node.getScale().y)/2);
+            if(this.node.getPosition().x >= positionX ||  this.node.getPosition().y <= positionY){
+                if(this.node.getPosition().x > positionX){
+                    rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y); 
+                }else{
+                    rigidBody.linearVelocity = new Vec2(0, rigidBody.linearVelocity.y); 
+                }
+                if(this.node.getPosition().y < positionY){
+                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,35);
+                }else{
+                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,0);
+                }
+            }
+            else{
+                this.rightWallToPlayPos = false;
                 rigidBody.linearVelocity = new Vec2(0, 0); 
             }  
         }
