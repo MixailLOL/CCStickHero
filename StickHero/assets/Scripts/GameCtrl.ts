@@ -16,7 +16,6 @@ export class GameCtrl extends Component {
     public isPressed = false;
     public bridgeInst: Node;
     public isRotated = true;
-    public leftWallToPlayPos = false;
     public rightWallToPlayPos = false;
     public playerToRightBridgeCorner = false;
     public playerOnRightWall = false;
@@ -76,7 +75,7 @@ export class GameCtrl extends Component {
         console.log("state start");
         console.log(this.activeWall.rightWall, this.activeWall.rightWall.node.getScale().x)
         this.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
-        this.leftWallToPlayPos = true;
+        this.activeWall.leftWall.leftWallToPlayPosF();
         this.rightWallToPlayPos = true;
         this.userInt.startPlayPose();  
     }
@@ -167,30 +166,6 @@ export class GameCtrl extends Component {
                 this.isRotated = true;
             }
         }
-        if(this.leftWallToPlayPos){
-            console.log("4");
-            let rigidBody = this.activeWall.leftWall.getComponent(RigidBody2D);
-            let positionX = -(view.getVisibleSize().width/2 - (this.activeWall.leftWall.node.width*this.activeWall.leftWall.node.getScale().x)/2);
-            let positionY = -(view.getVisibleSize().height/2 - (this.activeWall.leftWall.node.height*this.activeWall.leftWall.node.getScale().y)/2);
-            if(this.activeWall.leftWall.node.getPosition().x >= positionX ||  this.activeWall.leftWall.node.getPosition().y <= positionY){
-                if(this.activeWall.leftWall.node.getPosition().x > positionX){
-                    rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y);     
-                }else{
-                    rigidBody.linearVelocity = new Vec2(0, rigidBody.linearVelocity.y); 
-                }
-                if(this.activeWall.leftWall.node.getPosition().y < positionY){
-                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,35);
-                }else{
-                    rigidBody.linearVelocity = new Vec2(rigidBody.linearVelocity.x,0);
-                }
-            }
-            else{
-                this.leftWallToPlayPos = false;
-                Global.playerToPlayPos = true;
-                rigidBody.linearVelocity = new Vec2(0, 0); 
-            }  
-        }
-
         if(Global.playerToPlayPos){
             console.log("5");
             let positionX = (this.activeWall.leftWall.node.getPosition().x + this.activeWall.leftWall.node.width*this.activeWall.leftWall.node.getScale().x/2-this.player.node.width*this.player.node.scale.x);

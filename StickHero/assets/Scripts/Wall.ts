@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, screen, view, BoxCollider2D, math } from 'cc';
+import { _decorator, Component, Node, screen, view, BoxCollider2D, math, RigidBody2D, Vec2 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Wall')
@@ -25,7 +25,7 @@ export class Wall extends Component {
         this.node.setPosition(0,-(view.getVisibleSize().height/2+(this.node.height*wallAdoptivHeightScale*(1/6))));
     }
 
-    leftWallToPlayPos(){
+    leftWallToPlayPosF(){
         this.leftWallToPlayPos = true;
     }
 
@@ -33,7 +33,7 @@ export class Wall extends Component {
         if(this.leftWallToPlayPos){
             let rigidBody = this.getComponent(RigidBody2D);
             let positionX = -(view.getVisibleSize().width/2 - (this.node.width*this.node.getScale().x)/2);
-            let positionY = -(view.getVisibleSize().height/2 - (this.node.height*this.leftWall.node.getScale().y)/2);
+            let positionY = -(view.getVisibleSize().height/2 - (this.node.height*this.node.getScale().y)/2);
             if(this.node.getPosition().x >= positionX ||  this.node.getPosition().y <= positionY){
                 if(this.node.getPosition().x > positionX){
                     rigidBody.linearVelocity = new Vec2(-35, rigidBody.linearVelocity.y);     
