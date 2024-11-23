@@ -12,7 +12,6 @@ export class Wall extends Component {
         let maxRightWWS = (view.getVisibleSize().width)/(this.node.width*4);
         let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*3.5);
         let wallAdoptivHeightScale = (view.getVisibleSize().height)/(this.node.height*5);
-
         this.getComponent(BoxCollider2D).enabled = true;
         this.node.setScale(math.randomRange(minRightWWS, maxRightWWS),wallAdoptivHeightScale);
         this.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
@@ -36,6 +35,9 @@ export class Wall extends Component {
 
     update (deltaTime: number){
         if(this.leftWallToPlayPos){
+            let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*3.5);
+            let wallAdoptivHeightScale = (view.getVisibleSize().height)/(this.node.height*5);
+            this.node.setScale(wallAdoptivWidthScale,wallAdoptivHeightScale);
             let rigidBody = this.getComponent(RigidBody2D);
             let positionX = -(view.getVisibleSize().width/2 - (this.node.width*this.node.getScale().x)/2);
             let positionY = -(view.getVisibleSize().height/2 - (this.node.height*this.node.getScale().y)/2);
