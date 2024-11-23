@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Lable } from 'cc';
+import { _decorator, Component, Node, Button, Lable, view } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserInt')
@@ -34,8 +34,12 @@ export class UserInt extends Component {
     public bestScore: Node;
 
 
-    initPos() {
-       this.btnStart.node.setPosition(320, 550);
+    stateInitF() {
+        this.btnStart.node.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height/2);
+        this.gameOver.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
+        this.btnRetry.node.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
+        this.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
+        this.bestScore.setPosition(view.getVisibleSize().width*(3/4), view.getVisibleSize().height*0.9);
    }
 
    startPlayPose() {

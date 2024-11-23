@@ -91,18 +91,11 @@ export class GameCtrl extends Component {
         Global.activeWall.leftWall.stateInitL();
         this.isOver =false;
         this.score = 0;
-        this.userInt.gameOver.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
-        this.userInt.btnRetry.node.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
-        let playerAdoptivWidthScale = (view.getVisibleSize().width)/(this.player.node.width*13);
-        let playerAdoptivHeightScale = (view.getVisibleSize().height)/(this.player.node.height*13);
         this.userInt.score.getComponent(Label).string = this.score;
         this.userInt.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
-        this.userInt.bestScore.getComponent(Label).string = this.bestScore;
-        this.userInt.bestScore.setPosition(view.getVisibleSize().width*(3/4), view.getVisibleSize().height*0.9);   
-        this.player.node.setScale(playerAdoptivWidthScale, playerAdoptivHeightScale);
-        let playerInitPosY = Global.activeWall.leftWall.node.getPosition().y+Global.activeWall.leftWall.node.width*Global.activeWall.leftWall.node.getScale().y;
-        this.player.node.setPosition(0,playerInitPosY);
-        this.userInt.initPos();
+        this.userInt.bestScore.getComponent(Label).string = this.bestScore;   
+        this.userInt.stateInitF();
+        this.player.stateInitF();
     }
 
     onTouchStart(event: EventTouch) {

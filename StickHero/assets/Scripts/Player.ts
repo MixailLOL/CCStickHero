@@ -1,10 +1,14 @@
-import { _decorator, Component, Node, screen, Vec2, RigidBody2D, BoxCollider2D} from 'cc';
+import { _decorator, Component, Node, screen, Vec2, RigidBody2D, BoxCollider2D, view} from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
 export class Player extends Component {
-    initPos() {
-       this.node.setPosition(0, 0);
+    stateInitF() {
+        let adoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*13);
+        let adoptivHeightScale = (view.getVisibleSize().height)/(this.node.height*13);
+        this.node.setScale(adoptivWidthScale, adoptivHeightScale);
+        let initPosY = Global.activeWall.leftWall.node.getPosition().y+Global.activeWall.leftWall.node.width*Global.activeWall.leftWall.node.getScale().y;
+        this.node.setPosition(0,initPosY);
    }
 
    startPlayPose() {
