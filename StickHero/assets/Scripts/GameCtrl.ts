@@ -14,6 +14,7 @@ window.Global = {
     playerToRightBridgeCorner : false,
     score: 0,
     bestScore: 0,
+    statePlay: false,
 }
 @ccclass('GameCtrl')
 export class GameCtrl extends Component {
@@ -59,24 +60,24 @@ export class GameCtrl extends Component {
         Global.bridgeInst.setScale(0, 0);
         Global.bridgeInst.setPosition(0, 0);
         this.userInt.btnStart.node.on('click', () => {
-            this.stateStart();
+            this.stateStartF();
         })
         this.userInt.btnRetry.node.on('click', () => {
-            this.StateInit();
+            this.stateInitF();
         })
         input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
         input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.StateInit();
+        this.stateInitF();
     }
 
-    stateStart(){
+    stateStartF(){
         Global.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.activeWall.leftWall.leftWallToPlayPosF();
         Global.activeWall.rightWall.rightWallToPlayPosF();
         this.userInt.startPlayPose();  
     }
 
-    stateLose(){
+    stateLoseF(){
         Global.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.activeWall.leftWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         this.isOver = false;
@@ -84,20 +85,17 @@ export class GameCtrl extends Component {
         this.userInt.stateLooseF();
     }
 
-    StateInit() {
+    stateInitF() {
         Global.activeWall.rightWall.stateInitR();
         Global.activeWall.leftWall.stateInitL();
         this.isOver =false;
-        Global.score = 0;
-        this.userInt.score.getComponent(Label).string = Global.score;
-        this.userInt.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
-        this.userInt.bestScore.getComponent(Label).string = Global.bestScore;   
+        Global.score = 0;  
         this.userInt.stateInitF();
         this.player.stateInitF();
     }
 
     onTouchStart(event: EventTouch) {
-        if(!this.isOver && !Global.playerToRightBridgeCorner){
+        if(Global.statePlay){
             this.isPressed = true;
             Global.bridgeInst.setScale(0.01, 0, 1);
             let playerPos = this.player.node.getPosition();
@@ -110,12 +108,13 @@ export class GameCtrl extends Component {
     }
 
     onTouchEnd(event: EventTouch) {
-        if(!this.isOver && !Global.playerToRightBridgeCorner){
+        if(Global.statePlay){
             this.isPressed = false;
             this.isRotated = false;
             Global.playerToRightBridgeCorner = true;
             Global.score += this.checkWhereBridge();
-            this.userInt.score.getComponent(Label).string = Global.score;
+            this.userInt.updateScore();
+            Global.statePlay = false;
         }
     }
 
@@ -136,7 +135,7 @@ export class GameCtrl extends Component {
     update (deltaTime: number) {
         if(this.player.node.getPosition().y <= -view.getVisibleSize().height/2){
             this.isOver = true;
-            this.stateLose();
+            this.stateLoseF();
         }
         if(this.isPressed == true){
             let bridgeScale = Global.bridgeInst.getScale();
@@ -155,7 +154,7 @@ export class GameCtrl extends Component {
             Global.activeWall.leftWall = Global.activeWall.rightWall;
             Global.activeWall.rightWall = bufNode;
             Global.playerOnRightWall = false;
-            this.stateStart();
+            this.stateStartF();
         }
     }
 

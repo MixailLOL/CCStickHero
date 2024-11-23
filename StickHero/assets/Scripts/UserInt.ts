@@ -35,6 +35,9 @@ export class UserInt extends Component {
 
 
     stateInitF() {
+        this.score.getComponent(Label).string = Global.score;
+        this.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
+        this.bestScore.getComponent(Label).string = Global.bestScore; 
         this.btnStart.node.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height/2);
         this.gameOver.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
         this.btnRetry.node.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
@@ -50,6 +53,10 @@ export class UserInt extends Component {
 
    startPlayPose() {
        this.btnStart.node.setPosition(-1000, -1000);
+   }
+
+   updateScore(){
+        this.score.getComponent(Label).string = Global.score;
    }
 }
 

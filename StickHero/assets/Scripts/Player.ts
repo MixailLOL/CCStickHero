@@ -24,6 +24,7 @@ export class Player extends Component {
             }
             else{
                 Global.playerToPlayPos = false;
+                Global.statePlay = true;
                 rigidBody.linearVelocity = new Vec2(0, 0); 
             } 
         }
