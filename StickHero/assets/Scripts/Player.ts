@@ -32,7 +32,7 @@ export class Player extends Component {
         if(Global.playerToRightBridgeCorner){
             let positionX = 0;
             let bridgeRightCorner = Global.bridgeInst.getPosition().x+Global.bridgeInst.height/2*Global.bridgeInst.getScale().y;
-            if(this.badBridge){
+            if(Global.badBridge){
                 positionX = bridgeRightCorner-this.node.width*this.node.scale.x/2;
             }else{
                 positionX = (Global.activeWall.rightWall.node.getPosition().x + Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x/2-this.node.width*this.node.scale.x);

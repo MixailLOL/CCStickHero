@@ -80,6 +80,8 @@ export class GameCtrl extends Component {
     stateLoseF(){
         Global.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.activeWall.leftWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
+        Global.bridgeInst.setScale(0,0);
+        Global.bridgeInst.angle = 0;
         this.isOver = false;
         Global.bestScore = Global.score > Global.bestScore?Global.score:Global.bestScore;
         this.userInt.stateLooseF();
@@ -95,7 +97,7 @@ export class GameCtrl extends Component {
     }
 
     onTouchStart(event: EventTouch) {
-        if(Global.statePlay){
+        if(Global.statePlay && !Global.playerToPlayPos){
             this.isPressed = true;
             Global.bridgeInst.setScale(0.01, 0, 1);
             let playerPos = this.player.node.getPosition();
@@ -108,7 +110,7 @@ export class GameCtrl extends Component {
     }
 
     onTouchEnd(event: EventTouch) {
-        if(Global.statePlay){
+        if(Global.statePlay && !Global.playerToPlayPos &&  this.isPressed){
             this.isPressed = false;
             this.isRotated = false;
             Global.playerToRightBridgeCorner = true;
@@ -139,7 +141,7 @@ export class GameCtrl extends Component {
         }
         if(this.isPressed == true){
             let bridgeScale = Global.bridgeInst.getScale();
-            Global.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.01);
+            Global.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.015);
         }
         if(!this.isRotated){
             Global.bridgeInst.angle -= 5;
