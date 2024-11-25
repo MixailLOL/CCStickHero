@@ -35,6 +35,7 @@ export class UserInt extends Component {
 
 
     stateInitF() {
+        //set position on initial state 
         this.score.getComponent(Label).string = Global.score;
         this.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
         this.bestScore.getComponent(Label).string = Global.bestScore; 
@@ -45,7 +46,9 @@ export class UserInt extends Component {
         this.bestScore.setPosition(view.getVisibleSize().width*(3/4), view.getVisibleSize().height*0.9);
    }
 
+
    stateLooseF(){
+        //set position on lose state 
         this.gameOver.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.8);
         this.btnRetry.node.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.4);
         this.bestScore.getComponent(Label).string = Global.bestScore;

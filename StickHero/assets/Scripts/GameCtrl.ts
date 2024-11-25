@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, instantiate, Sprite, resources, Prefab, input, Input, UITransform, math, Vec2, RigidBody2D, view, Label, BoxCollider2D } from 'cc';
+import { _decorator, Component, Node, instantiate, Prefab, input, Input, view } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -71,6 +71,7 @@ export class GameCtrl extends Component {
     }
 
     stateStartF(){
+        //move objects to it playable positions
         Global.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.activeWall.leftWall.leftWallToPlayPosF();
         Global.activeWall.rightWall.rightWallToPlayPosF();
@@ -78,6 +79,7 @@ export class GameCtrl extends Component {
     }
 
     stateLoseF(){
+        //move objects to it lose state positions
         Global.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.activeWall.leftWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.bridgeInst.setScale(0,0);
@@ -88,6 +90,7 @@ export class GameCtrl extends Component {
     }
 
     stateInitF() {
+        // move objects to iny initial positions
         Global.activeWall.rightWall.stateInitR();
         Global.activeWall.leftWall.stateInitL();
         this.isOver =false;
@@ -97,6 +100,7 @@ export class GameCtrl extends Component {
     }
 
     onTouchStart(event: EventTouch) {
+        //when is play state and all objects in right places check press ivent; if it ok, spawn brige in right place
         if(Global.statePlay && !Global.playerToPlayPos){
             this.isPressed = true;
             Global.bridgeInst.setScale(0.01, 0, 1);
@@ -110,6 +114,7 @@ export class GameCtrl extends Component {
     }
 
     onTouchEnd(event: EventTouch) {
+        //check if it is play state, player in right position and befor it press is reallised, rotate bridge, say player to move
         if(Global.statePlay && !Global.playerToPlayPos &&  this.isPressed){
             this.isPressed = false;
             this.isRotated = false;
@@ -121,6 +126,7 @@ export class GameCtrl extends Component {
     }
 
     checkWhereBridge(){
+        // find where fall a bridge corner, check if it on the wall or miss
         let rightWallCenterLCorner = Global.activeWall.rightWall.node.getPosition().x- Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x/2;
         let rightWallCenterRCorner = Global.activeWall.rightWall.node.getPosition().x+ Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x/2;
         let bridgeRightCorner = Global.bridgeInst.getPosition().x+Global.bridgeInst.height/2*Global.bridgeInst.getScale().y;
@@ -135,21 +141,24 @@ export class GameCtrl extends Component {
     }
 
     update (deltaTime: number) {
+        //check is player fall down 
         if(this.player.node.getPosition().y <= -view.getVisibleSize().height/2){
             this.isOver = true;
             this.stateLoseF();
         }
+        //if is Pressed state start lenghter bridge
         if(this.isPressed == true){
             let bridgeScale = Global.bridgeInst.getScale();
             Global.bridgeInst.setScale(bridgeScale.x, bridgeScale.y+0.015);
         }
+        //if is no rotated state start rotate bridge
         if(!this.isRotated){
             Global.bridgeInst.angle -= 5;
             if(Global.bridgeInst.angle <= -90){
                 this.isRotated = true;
             }
         }
-
+        //if player on right wall, swap wall designations 
         if(Global.playerOnRightWall){
             let bufNode : Node;
             bufNode = Global.activeWall.leftWall;

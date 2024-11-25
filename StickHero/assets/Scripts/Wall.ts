@@ -8,6 +8,7 @@ export class Wall extends Component {
     public rightWallToPlayPos = false;
 
     stateInitR(){
+        //initial parameters of right wall
         let minRightWWS = (view.getVisibleSize().width)/(this.node.width*10);
         let maxRightWWS = (view.getVisibleSize().width)/(this.node.width*4);
         let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*3.5);
@@ -18,6 +19,7 @@ export class Wall extends Component {
     }
 
     stateInitL(){
+        //initial parameters of left wall
         let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*3.5);
         let wallAdoptivHeightScale = (view.getVisibleSize().height)/(this.node.height*5);
         this.getComponent(BoxCollider2D).enabled = true;
@@ -34,6 +36,7 @@ export class Wall extends Component {
     }
 
     update (deltaTime: number){
+        //move  left wall to play position 
         if(this.leftWallToPlayPos){
             let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*3.5);
             let wallAdoptivHeightScale = (view.getVisibleSize().height)/(this.node.height*5);
@@ -60,6 +63,7 @@ export class Wall extends Component {
             }  
         }
 
+        //move right wall to play position
         if(this.rightWallToPlayPos){
             let rigidBody = this.getComponent(RigidBody2D);
             let leftBorder = -(view.getVisibleSize().width/2 - (this.node.width*this.node.getScale().x)/2 - (this.node.width*this.node.getScale().x) - this.node.parent.children[2].width/2*this.node.parent.children[2].scale.x);

@@ -4,6 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('Player')
 export class Player extends Component {
     stateInitF() {
+        //initial player parameters 
         let adoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*13);
         let adoptivHeightScale = (view.getVisibleSize().height)/(this.node.height*13);
         this.node.setScale(adoptivWidthScale, adoptivHeightScale);
@@ -16,6 +17,7 @@ export class Player extends Component {
    }
 
    update (deltaTime: number){
+        //move player to play position
         if(Global.playerToPlayPos){
             let positionX = (Global.activeWall.leftWall.node.getPosition().x + Global.activeWall.leftWall.node.width*Global.activeWall.leftWall.node.getScale().x/2-this.node.width*this.node.scale.x);
             let rigidBody = this.node.getComponent(RigidBody2D);
@@ -29,6 +31,7 @@ export class Player extends Component {
             } 
         }
 
+        //move player to right bridge corner
         if(Global.playerToRightBridgeCorner){
             let positionX = 0;
             let bridgeRightCorner = Global.bridgeInst.getPosition().x+Global.bridgeInst.height/2*Global.bridgeInst.getScale().y;
