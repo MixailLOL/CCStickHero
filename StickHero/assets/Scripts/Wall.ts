@@ -9,7 +9,7 @@ export class Wall extends Component {
 
     stateInitR(){
         //initial parameters of right wall
-        let minRightWWS = (view.getVisibleSize().width)/(this.node.width*10);
+        let minRightWWS = (view.getVisibleSize().width)/(this.node.width*15);
         let maxRightWWS = (view.getVisibleSize().width)/(this.node.width*4);
         let wallAdoptivWidthScale = (view.getVisibleSize().width)/(this.node.width*3.5);
         let wallAdoptivHeightScale = (view.getVisibleSize().height)/(this.node.height*5);

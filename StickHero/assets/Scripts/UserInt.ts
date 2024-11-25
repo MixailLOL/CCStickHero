@@ -33,6 +33,12 @@ export class UserInt extends Component {
     })
     public bestScore: Node;
 
+    @property({
+        type: Node,
+        tooltip: "Perfect",
+    })
+    public perfectLable: Node;
+
 
     stateInitF() {
         //set position on initial state 
@@ -44,8 +50,16 @@ export class UserInt extends Component {
         this.btnRetry.node.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
         this.score.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.85);     
         this.bestScore.setPosition(view.getVisibleSize().width*(3/4), view.getVisibleSize().height*0.9);
+        this.perfectLable.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
    }
 
+    perfectShow(){
+        this.perfectLable.setPosition(view.getVisibleSize().width/2, view.getVisibleSize().height*0.7);
+    }
+
+    perfectHide(){
+        this.perfectLable.setPosition(view.getVisibleSize().width*2, view.getVisibleSize().height*2);
+    }
 
    stateLooseF(){
         //set position on lose state 

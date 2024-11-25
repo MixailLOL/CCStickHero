@@ -75,6 +75,7 @@ export class GameCtrl extends Component {
         Global.activeWall.rightWall.node.setPosition(view.getVisibleSize().width,-view.getVisibleSize().height);
         Global.activeWall.leftWall.leftWallToPlayPosF();
         Global.activeWall.rightWall.rightWallToPlayPosF();
+        this.userInt.perfectHide();
         this.userInt.startPlayPose();  
     }
 
@@ -132,6 +133,13 @@ export class GameCtrl extends Component {
         let bridgeRightCorner = Global.bridgeInst.getPosition().x+Global.bridgeInst.height/2*Global.bridgeInst.getScale().y;
         if(rightWallCenterLCorner < bridgeRightCorner && bridgeRightCorner < rightWallCenterRCorner){
             Global.badBridge = false;
+
+            let perfectLeftBorder = Global.activeWall.rightWall.node.getPosition().x - Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x*0.1;
+            let perfectRightBorder = Global.activeWall.rightWall.node.getPosition().x + Global.activeWall.rightWall.node.width*Global.activeWall.rightWall.node.getScale().x*0.1;
+            //check if bridge fall in "Perfect" zone of wall (+- 10% from center)
+            if(perfectLeftBorder < bridgeRightCorner && bridgeRightCorner < perfectRightBorder){
+                this.userInt.perfectShow();
+            }
             return 1;
         }
         else{
